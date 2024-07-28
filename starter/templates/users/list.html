@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% set title = 'Felhasználók' %}
+{% set search = True %}
+
+{% block content %}
+    <table class="table mt-5">
+        <thead>
+        <tr>
+            <th>Felhasználónév</th>
+            <th>Szerepkör</th>
+            <th>Név</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.role.name }}</td>
+                <td>{% if user.name %}{{ user.name }}{% endif %}</td>
+                <td>
+                    <div class="d-flex">
+                        <a href="{{ url_for('users.edit', username=user.username) }}" class="btn btn-primary mx-1">
+                            Szerkesztés
+                        </a>
+                        <form method="post" action="{{ url_for('users.delete', username=user.username) }}" class="mx-1">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Felhasználó törlése?')">
+                                Törlés
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+        <a href="#top">Oldal teteje</a>
+    </div>
+{% endblock %}

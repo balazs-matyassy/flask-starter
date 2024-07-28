@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="hu" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Flask Starter">
+    <meta name="author" content="Balázs Mátyássy">
+    <title>Flask Starter{% if title %} | {{ title }}{% endif %}</title>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <style>
+        body {
+            padding-top: 4.5rem;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            font-family: inherit;
+            font-size: inherit;
+            text-align: justify;
+        }
+    </style>
+
+    {% block style_head %}{% endblock %}
+    {% block script_head %}{% endblock %}
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('pages.home') }}">
+            Flask Starter
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('pages.home') }}">Kezdőlap</a>
+                </li>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Felhasználók</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('users.list_all') }}">
+                                    Felhasználók
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('users.create') }}">
+                                    Felhasználó létrehozása
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('security.change_password') }}">Jelszó megváltoztatása</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('security.login') }}">Bejelentkezés</a>
+                    </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav mb-2 mb-md-0">
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('security.logout') }}">Kijelentkezés
+                            [{{ g.user.username }}]</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="bg-body-tertiary p-5 rounded">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-primary" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if title or search %}
+            <div class="row">
+                {% if title %}
+                    <div class="col">
+                        <h1>{{ title }}</h1>
+                    </div>
+                {% endif %}
+                {% if search %}
+                    <div class="col float-end">
+                        <form class="d-flex" role="search">
+                            <input class="form-control me-2" name="search" type="search" placeholder="Keresés"
+                                   id="search"
+                                   value="{{ request.args.get('search', '') }}">
+                            <label for="search">
+                                <button class="btn btn-outline-success" type="submit">Keresés</button>
+                            </label>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+{% block script_tail %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% set title = 'Felhasználó szerkesztése' %}
+{% set confirm_message = 'Felhasználó mentése?' %}
+
+{% block content %}
+    <div class="mt-5">
+        {% include 'users/_form.html' %}
+    </div>
+{% endblock %}
